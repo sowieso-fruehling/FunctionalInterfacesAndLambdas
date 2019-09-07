@@ -1,9 +1,16 @@
 package de.br.aff.lambdas.functional_interfaces.fun_interfaces;
 
 import de.br.aff.lambdas.domain.Person;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import org.junit.Test;
-
-import java.util.function.*;
 
 public class JavasFunInterfacesTests {
 
@@ -88,5 +95,30 @@ public class JavasFunInterfacesTests {
     public void thatPredicateAcceptsDefinedTypeParameterAndReturnsBoolean() {
         Predicate<String> p = s -> s.length() > 20;
         assert !p.test("asd");
+    }
+
+    @Test
+    public void thatBiPredicateAcceptsTwoParametersAndReturnsBoolean() {
+        BiPredicate<String, Integer> bip = (s, i) -> Integer.valueOf(s) > i;
+        assert bip.test("5", 1);
+    }
+
+    @Test
+    public void thatPredicateCanBeUsedForBoolsAlgebra() {
+        Predicate<String> p1 = s -> s.length() > 5;
+        Predicate<String> p2 = s -> s.length() < 20;
+        Predicate<String> p3 = s -> s.contains("s");
+        Predicate<String> p = p1.and(p2).or(p3);
+
+        assert p.test("s");
+        assert !p.test("ad");
+        assert p.test("adfgdd");
+
+    }
+
+    @Test
+    public void thatPredicateCanBeUsedToCompareIfTwoObjectsAreTheSame() {
+        Predicate<Integer> p = Predicate.isEqual(1);
+        assert p.test(1);
     }
 }
