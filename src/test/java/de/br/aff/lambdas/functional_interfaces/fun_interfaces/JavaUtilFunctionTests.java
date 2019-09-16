@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.junit.Test;
 
-public class JavasFunInterfacesTests {
+public class JavaUtilFunctionTests {
 
     //CONSUMERS:
 
@@ -111,6 +111,7 @@ public class JavasFunInterfacesTests {
         Predicate<String> p = p1.and(p2).or(p3);
 
         assert p.test("s");
+        assert p.negate().test("ad");
         assert !p.test("ad");
         assert p.test("adfgdd");
 

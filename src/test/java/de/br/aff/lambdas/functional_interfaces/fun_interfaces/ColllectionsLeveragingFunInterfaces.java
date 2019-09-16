@@ -45,8 +45,18 @@ public class ColllectionsLeveragingFunInterfaces {
   }
 
   @Test
-  public void thatWeCanSortCollectionUsingComparator() {
+  public void thatWeCanSortCollectionByUsingComparator() {
 
+    people.sort(Comparator.comparing(
+        Person::getLastName)); // better way to to this: Collections.sort(people, (a, b) -> a.getLastName().compareTo(b.getLastName()));
+
+    assert people.get(0).getAge() == 0;
+    assert people.get(1).getAge() == 1;
+    assert people.get(9).getAge() == 9;
+  }
+
+  @Test
+  public void thatWeCanSortCollectionByChainingComparators() {
     people.get(0).setAge(2);
     people.sort(Comparator.comparing(Person::getAge).thenComparing(Person::getLastName));
 
