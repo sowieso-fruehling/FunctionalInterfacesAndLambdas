@@ -2,9 +2,11 @@ package de.br.aff.lambdas.stream;
 
 import de.br.aff.lambdas.domain.Person;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -114,6 +116,63 @@ public class StreamsTests {
     assert 45 == sum;
 
   }
+
+  @Test
+  public void thatPeekCanPrintCurrentStateOfPipeline() {
+    people.stream()
+        .filter(e -> e.getAge() > 7)
+        .peek(e -> System.out.println("Filtered value: " + e.toString()))
+        .map(e -> {
+          e.setFirstName("Joe");
+          return e;
+        })
+        .peek(e -> System.out.println("Mapped value: " + e.toString()))
+        .collect(Collectors
+            .toList());// this terminal step is required, otherwise it wouldn't print anything
+  }
+
+  @Test
+  public void thatPeekModifiesInternalStateOfElements() {
+    List<Person> transformed = people.stream().peek(e -> e.setAge(1))
+        .collect(Collectors.toList());
+
+    assert 10 == transformed.size();
+    assert 1 == transformed.get(5).getAge();
+
+  }
+
+  @Test
+  public void flatMapTransformsOneObjectToZeroOrMoreOtherObjects() {
+    List<List<String>> list = List.of(
+        List.of("a", "c"),
+        List.of("b", "d"));
+
+    List<String> flatList = list.stream()
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
+
+    assert 4 == flatList.size();
+    assert "a".equals(flatList.get(0));
+  }
+
+  // if objects being part of our stream are having inner collection, this is how we can extract them all and merge them
+  @Test
+  public void flatMapTransformsOneObjectToZeroOrMoreOtherObjectsSecondExample() {
+
+    List<Person> flattened =
+        IntStream.range(1, 10)
+            .mapToObj(i -> new Person("" + i, "" + i, i, new ArrayList<>()))
+            .peek(p -> IntStream.range(10, 15).mapToObj(i -> new Person("" + i, "" + i, i))
+                .forEach(p.getFriends()::add))
+
+            .flatMap(e -> e.getFriends().stream())
+            .collect(Collectors.toList());
+
+    assert 45 == flattened.size();
+    assert 10 == flattened.get(0).getAge();
+    assert 10 == flattened.get(5).getAge();
+  }
+
 
   @Test
   public void parallelStreams() {
